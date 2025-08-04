@@ -255,6 +255,20 @@ docRef.onSnapshot(async doc => {
   sequencesData = doc.data().sections || [];
   render();
 });
+
+// Sauvegarde des données dans Firestore
+document.getElementById('save-btn').addEventListener('click', () => {
+  docRef.set({ sections: sequencesData })
+    .then(() => {
+      alert("✅ Données sauvegardées avec succès !");
+    })
+    .catch(error => {
+      console.error("❌ Erreur lors de la sauvegarde :", error);
+      alert("Erreur lors de la sauvegarde. Voir la console.");
+    });
+});
+
+
   </script>
 </body>
 </html>
