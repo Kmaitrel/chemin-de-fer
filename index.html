@@ -188,7 +188,7 @@ document.querySelectorAll('.delete-sequence-btn').forEach(btn => {
       sequencesData.push(newSection);
       render();
     });    
-docRef.onSnapshot(async doc => {
+docRef.get().then(async doc => {
   if (!doc.exists || !doc.data().sections || doc.data().sections.length === 0) {
     // Initialisation des données par défaut
     const defaultData = [
@@ -249,7 +249,6 @@ docRef.onSnapshot(async doc => {
     await docRef.set({ sections: defaultData });
     sequencesData = defaultData;
     render();
-    return;
   }
 
   sequencesData = doc.data().sections || [];
