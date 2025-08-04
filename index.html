@@ -48,8 +48,7 @@
   <div class="container mx-auto p-4 md:p-8">
     <div class="bg-white p-6 rounded-2xl shadow-lg mb-8">
       <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Chemin de Fer Interactif</h1>
-      <p class="text-gray-600 mt-2">Film : Réunion Annuelle La Réunion
-</p>
+      <p class="text-gray-600 mt-2">Film : Réunion Annuelle La Réunion</p>
       <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                 <p><span class="font-bold">Instructions :</span> Tous les champs sont modifiables. Cliquez sur un texte pour le changer. Les modifications sont sauvegardées lorsque vous cliquez sur "Sauvegarder".</p>
             </div>
@@ -119,7 +118,13 @@
               <div class="editable bg-gray-50" contenteditable="true" data-section="${sectionIndex}" data-seq="${seqIndex}" data-field="audio">${seq.audio}</div>
               <div class="editable bg-gray-50" contenteditable="true" data-section="${sectionIndex}" data-seq="${seqIndex}" data-field="message">${seq.message}</div>
               <div class="editable bg-gray-50" contenteditable="true" data-section="${sectionIndex}" data-seq="${seqIndex}" data-field="timecodes">${seq.timecodes}</div>
-              <div></div>`;
+              <div class="text-center">
+                <button data-section="${sectionIndex}" data-seq="${seqIndex}" class="delete-sequence-btn p-2 text-gray-400 hover:text-red-600 rounded-full">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+              </div>`;
             sectionContent.appendChild(seqElement);
           });
         }
@@ -140,7 +145,17 @@
           sequencesData[sectionIndex].section = e.target.innerText;
         });
       });
-      document.querySelectorAll('.add-sequence-btn').forEach(btn => {
+      document.querySelectorAll('.delete-sequence-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const { section, seq } = e.currentTarget.dataset;
+        if (confirm('Êtes-vous sûr de vouloir supprimer cette séquence ?')) {
+          sequencesData[section].sequences.splice(seq, 1);
+          render();
+        }
+      });
+    });
+
+    document.querySelectorAll('.add-sequence-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const { sectionIndex } = e.target.dataset;
           sequencesData[sectionIndex].sequences.push({
@@ -157,7 +172,7 @@
     };
 
     
-  document.getElementById('add-section-btn').addEventListener('click', () => {
+    document.getElementById('add-section-btn').addEventListener('click', () => {
       const newSection = {
         section: "Nouvelle section de démonstration",
         open: true,
@@ -174,41 +189,74 @@
       };
       sequencesData.push(newSection);
       render();
-    });
-
-    document.getElementById('save-btn').addEventListener('click', () => {
-      docRef.set({ sections: sequencesData });
-    });
-
-    
+    });    
 docRef.onSnapshot(async doc => {
-      if (!doc.exists || !doc.data().sections || doc.data().sections.length === 0) {
-        // Initialisation des données par défaut
-        const defaultData = [
+  if (!doc.exists || !doc.data().sections || doc.data().sections.length === 0) {
+    // Initialisation des données par défaut
+    const defaultData = [
+      {
+        section: "Entreprendre pour la solidarité",
+        open: true,
+        sequences: [
           {
-            section: "Exemple de Section",
-            open: true,
-            sequences: [
-              {
-                theme: "Thème Exemple",
-                duration: "1'00",
-                visual: "Description visuelle",
-                audio: "Description sonore",
-                message: "Message clé",
-                timecodes: "00:00-01:00"
-              }
-            ]
+            theme: "Réponse à la Crise & Soutien Logistique",
+            duration: "1'00\"",
+            visual: "Images de la crise Covid (stylisées). Plans des entrepôts de la Banque Alimentaire, bénévoles en action. Focus sur les conteneurs de denrées.",
+            audio: "VO (Montage de discours): \"Au mois de mars 2020, la crise du qu'Ovide se déclenche... L'attitude de nos collaborateurs est exemplaire.\" + \"Nous réussissons à importer... 1 350 000 masques.\"",
+            message: "En temps de crise, le groupe est un pilier de la société, capable de mobiliser sa puissance logistique pour le bien commun.",
+            timecodes: "Soirée des collaborateurs (longue): 01:08-01:14 (crise du qu'Ovide...) | Soirée des collaborateurs (longue): 01:57-02:13 (1 350 000 masques)"
+          },
+          {
+            theme: "Le Partenariat avec la Banque Alimentaire",
+            duration: "1'15\"",
+            visual: "Extraits de la vidéo sur la Banque Alimentaire. Plans du camion-cuisine en action, ateliers culinaires, distribution. Témoignage d'un responsable de la BA.",
+            audio: "Témoignage (Banque Alimentaire): \"C'est pas seulement un partenaire sur le transport maritime mais c'est également un partenaire dans le mécénat financier... et sur la ramasse à travers la filiale Carrefour.\" + Focus sur le camion-cuisine et son rôle nutritionnel.",
+            message: "La solidarité de GBH est un engagement profond, multiforme (logistique, financier, dons) et innovant, qui s'attaque aux causes profondes des problèmes sociaux.",
+            timecodes: "Vidéo Banque Alimentaire (01hK7efHWio): 00:50-01:05 (soutien multiforme) | Vidéo Banque Alimentaire (01hK7efHWio): 01:23-01:37 (camion-cuisine)"
           }
-        ];
-        await docRef.set({ sections: defaultData });
-        sequencesData = defaultData;
-        render();
-        return;
+        ]
+      },
+      {
+        section: "Entreprendre pour l'emploi",
+        open: false,
+        sequences: [
+          {
+            theme: "Tremplin pour l'Emploi : Donner une Chance",
+            duration: "1'00\"",
+            visual: "Images des programmes TPE avec le RSMA et l'E2C. Jeunes en formation (militaire, mécanique, vente). Témoignages d'Anaïs Regnault ou Cécile Cavalie.",
+            audio: "Témoignage (RRH ou M. Lapeyre): \"Tremplin pour l'emploi... s'adresse à des jeunes éloignés de l'emploi... l'ambition de recruter 15 jeunes en vue de préparer un titre professionnel...\" + Focus sur le \"savoir-être\".",
+            message: "GBH investit dans la jeunesse en difficulté, en lui offrant non seulement des compétences techniques mais aussi les codes du monde professionnel.",
+            timecodes: "Vidéo TPE RSMA (Oi-JXBtkNp4): 00:05-00:25 (présentation) | Vidéo TPE Département (oN_rl4x6WDw): 00:06-00:16 (partenariat)"
+          },
+          {
+            theme: "Construire les Carrières : DistriSup & EGC",
+            duration: "0'45\"",
+            visual: "Extraits des vidéos sur DistriSup et l'EGC. Étudiants en alternance, en stage. Témoignage d'Amaury de Lavigne.",
+            audio: "Témoignage (A. de Lavigne): \"Nous avons 30% de nos cadres qui sont issus de ce cursus de formation.\" + \"100% des jeunes qui ont suivi ce parcours... sont aujourd'hui des jeunes à responsabilité dans l'entreprise.\"",
+            message: "GBH forme ses propres managers de demain en partenariat avec les meilleures écoles locales, garantissant un pipeline de talents.",
+            timecodes: "Vidéo DistriSup (Y-pek71Eh3c): 00:37-00:42 (30% cadres) | Vidéo EGC (kBI5in_XnqI): 00:57-01:01 (103 stagiaires)"
+          },
+          {
+            theme: "Le Témoignage Collaborateur : L'Évolution Interne",
+            duration: "0'45\"",
+            visual: "Portrait de Sullivan Bousleiman dans son magasin Carrefour. Interaction avec ses équipes.",
+            audio: "Témoignage (S. Bousleiman): \"Mon parcours a débuté en tant que directeur adjoint, puis j'ai été promu directeur...\" + \"J'ai trouvé dans GBH une autonomie et une liberté d'entreprendre qui sont mes maîtres mots au quotidien.\"",
+            message: "Le groupe offre de réelles perspectives d'évolution et une culture d'entreprise qui valorise l'autonomie et l'initiative.",
+            timecodes: "Vidéo Sullivan (AlHd-BrAGPQ): 00:22-00:33 (parcours) | Vidéo Sullivan (AlHd-BrAGPQ): 00:44-00:51 (autonomie)"
+          }
+        ]
       }
+    ];
 
-      sequencesData = doc.exists ? doc.data().sections || [] : [];
-      render();
-    });
+    await docRef.set({ sections: defaultData });
+    sequencesData = defaultData;
+    render();
+    return;
+  }
+
+  sequencesData = doc.data().sections || [];
+  render();
+});
   </script>
 </body>
 </html>
