@@ -145,15 +145,13 @@
           sequencesData[sectionIndex].section = e.target.innerText;
         });
       });
-      document.querySelectorAll('.delete-sequence-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const { section, seq } = e.currentTarget.dataset;
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette séquence ?')) {
-          sequencesData[section].sequences.splice(seq, 1);
-          render();
-        }
-      });
-    });
+document.querySelectorAll('.delete-sequence-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const { section, seq } = e.currentTarget.dataset;
+    sequencesData[section].sequences.splice(seq, 1);
+    render();
+  });
+});
 
     document.querySelectorAll('.add-sequence-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
